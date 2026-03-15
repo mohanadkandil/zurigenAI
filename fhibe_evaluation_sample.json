@@ -1,0 +1,654 @@
+{
+  "description": "FHIBE evaluation sample - diverse subjects by skin group and region",
+  "total_samples": 12,
+  "samples": [
+    {
+      "image_id": "a2201088-f961-40c0-9c7d-dafc046d782f",
+      "subject_id": "2b58c858-d8eb-49a1-b4d1-2191cb8d06bf",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/2b58c858-d8eb-49a1-b4d1-2191cb8d06bf/a2201088-f961-40c0-9c7d-dafc046d782f/main_a2201088-f961-40c0-9c7d-dafc046d782f.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/2b58c858-d8eb-49a1-b4d1-2191cb8d06bf/a2201088-f961-40c0-9c7d-dafc046d782f/main_annos_a2201088-f961-40c0-9c7d-dafc046d782f.json",
+      "age": "19",
+      "pronoun": "she/her",
+      "skin_group": "dark",
+      "region": "Africa",
+      "ancestry": "Africa",
+      "nationality": "['184. South African']",
+      "apparent_skin_color": "0. [102, 78, 65]",
+      "hair_type": "coily/kinky",
+      "face_bbox": {
+        "x": "1008.1",
+        "y": "142.5",
+        "w": "152.1",
+        "h": "241.1"
+      },
+      "image_annotation": {
+        "camera_position": "1. Atypical High",
+        "lighting": [
+          "0. Lighting from above the head/face"
+        ],
+        "scene": "12. Indoor: Home or hotel",
+        "location_country": "South Africa",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 19,
+        "nationality": [
+          "184. South African"
+        ],
+        "ancestry": [
+          "0. Africa",
+          "4. Southern Africa"
+        ],
+        "pronoun": [
+          "2. They/them/their",
+          "0. She/her/hers"
+        ],
+        "natural_skin_color": "3. [175, 148, 120]",
+        "apparent_skin_color": "0. [102, 78, 65]",
+        "hairstyle": "1. Buzz cut",
+        "natural_hair_type": "4. Kinky-coily",
+        "apparent_hair_type": "4. Kinky-coily",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "4. Lying down/sleeping"
+      }
+    },
+    {
+      "image_id": "ab4001dd-4541-444a-b201-53e51d3b48c7",
+      "subject_id": "37656ebe-cc15-4bdc-aa52-ebf980cb9920",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/37656ebe-cc15-4bdc-aa52-ebf980cb9920/ab4001dd-4541-444a-b201-53e51d3b48c7/main_ab4001dd-4541-444a-b201-53e51d3b48c7.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/37656ebe-cc15-4bdc-aa52-ebf980cb9920/ab4001dd-4541-444a-b201-53e51d3b48c7/main_annos_ab4001dd-4541-444a-b201-53e51d3b48c7.json",
+      "age": "28",
+      "pronoun": "she/her",
+      "skin_group": "dark",
+      "region": "Other",
+      "ancestry": "Africa",
+      "nationality": "['105. Kenyan']",
+      "apparent_skin_color": "0. [102, 78, 65]",
+      "hair_type": "coily/kinky",
+      "face_bbox": {
+        "x": "696.4",
+        "y": "634.5",
+        "w": "132.3",
+        "h": "190.8"
+      },
+      "image_annotation": {
+        "camera_position": "0. Typical",
+        "lighting": [
+          "0. Lighting from above the head/face",
+          "2. Lighting from in front of the head/face",
+          "5. Lighting from the right of the head/face"
+        ],
+        "scene": "8. Outdoor: Houses, cabins, gardens, and farms",
+        "location_country": "KENYA",
+        "weather": [
+          "4. Humid"
+        ]
+      },
+      "ground_truth": {
+        "age": 28,
+        "nationality": [
+          "105. Kenyan"
+        ],
+        "ancestry": [
+          "0. Africa",
+          "2. Eastern Africa"
+        ],
+        "pronoun": [
+          "0. She/her/hers"
+        ],
+        "natural_skin_color": "0. [102, 78, 65]",
+        "apparent_skin_color": "0. [102, 78, 65]",
+        "hairstyle": "5. Down (Short)",
+        "natural_hair_type": "4. Kinky-coily",
+        "apparent_hair_type": "4. Kinky-coily",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "7. Running/jogging"
+      }
+    },
+    {
+      "image_id": "03ba74f8-e855-4901-9525-f98305dae3a7",
+      "subject_id": "0c0352bf-6d66-4bbf-86a0-3f2a7e4d899d",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/0c0352bf-6d66-4bbf-86a0-3f2a7e4d899d/03ba74f8-e855-4901-9525-f98305dae3a7/main_03ba74f8-e855-4901-9525-f98305dae3a7.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/0c0352bf-6d66-4bbf-86a0-3f2a7e4d899d/03ba74f8-e855-4901-9525-f98305dae3a7/main_annos_03ba74f8-e855-4901-9525-f98305dae3a7.json",
+      "age": "22",
+      "pronoun": "he/him",
+      "skin_group": "dark",
+      "region": "Asia",
+      "ancestry": "South/SE Asia",
+      "nationality": "['93. Indian']",
+      "apparent_skin_color": "1. [136, 105, 81]",
+      "hair_type": "straight",
+      "face_bbox": {
+        "x": "740.0",
+        "y": "199.6",
+        "w": "254.9",
+        "h": "364.6"
+      },
+      "image_annotation": {
+        "camera_position": "2. Atypical Low",
+        "lighting": [
+          "5. Lighting from the right of the head/face"
+        ],
+        "scene": "8. Outdoor: Houses, cabins, gardens, and farms",
+        "location_country": "India",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 22,
+        "nationality": [
+          "93. Indian"
+        ],
+        "ancestry": [
+          "11. Asia",
+          "15. Southern Asia"
+        ],
+        "pronoun": [
+          "1. He/him/his"
+        ],
+        "natural_skin_color": "4. [189, 163, 137]",
+        "apparent_skin_color": "1. [136, 105, 81]",
+        "hairstyle": "5. Down (Short)",
+        "natural_hair_type": "1. Straight",
+        "apparent_hair_type": "1. Straight",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "1. Sitting"
+      }
+    },
+    {
+      "image_id": "0a619f4e-8cd3-4993-a9b1-94efe668e88b",
+      "subject_id": "bfadd466-24b5-4bdb-a2a1-baf948441e82",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/bfadd466-24b5-4bdb-a2a1-baf948441e82/0a619f4e-8cd3-4993-a9b1-94efe668e88b/main_0a619f4e-8cd3-4993-a9b1-94efe668e88b.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/bfadd466-24b5-4bdb-a2a1-baf948441e82/0a619f4e-8cd3-4993-a9b1-94efe668e88b/main_annos_0a619f4e-8cd3-4993-a9b1-94efe668e88b.json",
+      "age": "27",
+      "pronoun": "he/him",
+      "skin_group": "dark",
+      "region": "Western",
+      "ancestry": "Africa",
+      "nationality": "['3. American']",
+      "apparent_skin_color": "0. [102, 78, 65]",
+      "hair_type": "coily/kinky",
+      "face_bbox": {
+        "x": "719.2",
+        "y": "594.7",
+        "w": "118.2",
+        "h": "158.7"
+      },
+      "image_annotation": {
+        "camera_position": "0. Typical",
+        "lighting": [
+          "4. Lighting from the left of the head/face",
+          "2. Lighting from in front of the head/face"
+        ],
+        "scene": "9. Outdoor: Commercial buildings, shops, markets, cities, and towns",
+        "location_country": "United States",
+        "weather": [
+          "5. Cloud",
+          "4. Humid"
+        ]
+      },
+      "ground_truth": {
+        "age": 27,
+        "nationality": [
+          "3. American"
+        ],
+        "ancestry": [
+          "0. Africa",
+          "11. Asia",
+          "1. Northern Africa"
+        ],
+        "pronoun": [
+          "1. He/him/his"
+        ],
+        "natural_skin_color": "0. [102, 78, 65]",
+        "apparent_skin_color": "0. [102, 78, 65]",
+        "hairstyle": "10. Down (Medium)",
+        "natural_hair_type": "3. Curly",
+        "apparent_hair_type": "4. Kinky-coily",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "1. Sitting"
+      }
+    },
+    {
+      "image_id": "d9df58a0-70a7-4447-bd60-d761499a110e",
+      "subject_id": "9ec2ab4d-8b28-45ac-8c9a-ba9e5b04ad16",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/9ec2ab4d-8b28-45ac-8c9a-ba9e5b04ad16/d9df58a0-70a7-4447-bd60-d761499a110e/main_d9df58a0-70a7-4447-bd60-d761499a110e.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/9ec2ab4d-8b28-45ac-8c9a-ba9e5b04ad16/d9df58a0-70a7-4447-bd60-d761499a110e/main_annos_d9df58a0-70a7-4447-bd60-d761499a110e.json",
+      "age": "24",
+      "pronoun": "he/him",
+      "skin_group": "medium",
+      "region": "Asia",
+      "ancestry": "Other",
+      "nationality": "['93. Indian']",
+      "apparent_skin_color": "2. [164, 131, 103]",
+      "hair_type": "straight",
+      "face_bbox": {
+        "x": "674.2",
+        "y": "669.9",
+        "w": "113.2",
+        "h": "157.6"
+      },
+      "image_annotation": {
+        "camera_position": "0. Typical",
+        "lighting": [
+          "2. Lighting from in front of the head/face",
+          "5. Lighting from the right of the head/face"
+        ],
+        "scene": "12. Indoor: Home or hotel",
+        "location_country": "India",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 24,
+        "nationality": [
+          "93. Indian"
+        ],
+        "ancestry": [
+          "11. Asia"
+        ],
+        "pronoun": [
+          "1. He/him/his"
+        ],
+        "natural_skin_color": "2. [164, 131, 103]",
+        "apparent_skin_color": "2. [164, 131, 103]",
+        "hairstyle": "8. Up (Medium)",
+        "natural_hair_type": "2. Wavy",
+        "apparent_hair_type": "1. Straight",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "1. Sitting"
+      }
+    },
+    {
+      "image_id": "b4167600-7062-4e74-ad03-909f0224c4a0",
+      "subject_id": "bb9f041a-abff-4f16-a972-105d8b8c3e57",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/bb9f041a-abff-4f16-a972-105d8b8c3e57/b4167600-7062-4e74-ad03-909f0224c4a0/main_b4167600-7062-4e74-ad03-909f0224c4a0.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/bb9f041a-abff-4f16-a972-105d8b8c3e57/b4167600-7062-4e74-ad03-909f0224c4a0/main_annos_b4167600-7062-4e74-ad03-909f0224c4a0.json",
+      "age": "50",
+      "pronoun": "she/her",
+      "skin_group": "medium",
+      "region": "Western",
+      "ancestry": "Africa",
+      "nationality": "['73. French']",
+      "apparent_skin_color": "3. [175, 148, 120]",
+      "hair_type": "wavy",
+      "face_bbox": {
+        "x": "787.1",
+        "y": "235.1",
+        "w": "138.7",
+        "h": "206.1"
+      },
+      "image_annotation": {
+        "camera_position": "2. Atypical Low",
+        "lighting": [
+          "2. Lighting from in front of the head/face",
+          "5. Lighting from the right of the head/face"
+        ],
+        "scene": "12. Indoor: Home or hotel",
+        "location_country": "France",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 50,
+        "nationality": [
+          "73. French"
+        ],
+        "ancestry": [
+          "0. Africa",
+          "21. Western Europe",
+          "17. Europe",
+          "1. Northern Africa"
+        ],
+        "pronoun": [
+          "0. She/her/hers"
+        ],
+        "natural_skin_color": "5. [198, 180, 157]",
+        "apparent_skin_color": "3. [175, 148, 120]",
+        "hairstyle": "13. Up (Long)",
+        "natural_hair_type": "1. Straight",
+        "apparent_hair_type": "2. Wavy",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "15. Free-text"
+      }
+    },
+    {
+      "image_id": "d5938eee-8e26-4e86-a244-f800b8644d4c",
+      "subject_id": "790f5d12-ec3b-4f7f-a914-4a9934cd0715",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/790f5d12-ec3b-4f7f-a914-4a9934cd0715/d5938eee-8e26-4e86-a244-f800b8644d4c/main_d5938eee-8e26-4e86-a244-f800b8644d4c.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/790f5d12-ec3b-4f7f-a914-4a9934cd0715/d5938eee-8e26-4e86-a244-f800b8644d4c/main_annos_d5938eee-8e26-4e86-a244-f800b8644d4c.json",
+      "age": "29",
+      "pronoun": "he/him",
+      "skin_group": "medium",
+      "region": "Africa",
+      "ancestry": "Africa",
+      "nationality": "['184. South African']",
+      "apparent_skin_color": "2. [164, 131, 103]",
+      "hair_type": "coily/kinky",
+      "face_bbox": {
+        "x": "526.8",
+        "y": "486.7",
+        "w": "253.5",
+        "h": "324.4"
+      },
+      "image_annotation": {
+        "camera_position": "1. Atypical High",
+        "lighting": [
+          "0. Lighting from above the head/face"
+        ],
+        "scene": "12. Indoor: Home or hotel",
+        "location_country": "South Africa",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 29,
+        "nationality": [
+          "184. South African"
+        ],
+        "ancestry": [
+          "0. Africa",
+          "4. Southern Africa"
+        ],
+        "pronoun": [
+          "1. He/him/his"
+        ],
+        "natural_skin_color": "2. [164, 131, 103]",
+        "apparent_skin_color": "2. [164, 131, 103]",
+        "hairstyle": "6. Not listed(Short)",
+        "natural_hair_type": "4. Kinky-coily",
+        "apparent_hair_type": "4. Kinky-coily",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "1. Sitting"
+      }
+    },
+    {
+      "image_id": "62a153d1-09ba-459c-af80-4a08829c1c56",
+      "subject_id": "cb2bff13-01e6-4117-8f6f-9f6450f8e372",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/cb2bff13-01e6-4117-8f6f-9f6450f8e372/62a153d1-09ba-459c-af80-4a08829c1c56/main_62a153d1-09ba-459c-af80-4a08829c1c56.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/cb2bff13-01e6-4117-8f6f-9f6450f8e372/62a153d1-09ba-459c-af80-4a08829c1c56/main_annos_62a153d1-09ba-459c-af80-4a08829c1c56.json",
+      "age": "20",
+      "pronoun": "he/him",
+      "skin_group": "medium",
+      "region": "Other",
+      "ancestry": "South/SE Asia",
+      "nationality": "['218. Vietnamese']",
+      "apparent_skin_color": "3. [175, 148, 120]",
+      "hair_type": "straight",
+      "face_bbox": {
+        "x": "632.6",
+        "y": "330.2",
+        "w": "178.2",
+        "h": "235.0"
+      },
+      "image_annotation": {
+        "camera_position": "0. Typical",
+        "lighting": [
+          "0. Lighting from above the head/face",
+          "2. Lighting from in front of the head/face"
+        ],
+        "scene": "12. Indoor: Home or hotel",
+        "location_country": "Vietnam ",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 20,
+        "nationality": [
+          "218. Vietnamese"
+        ],
+        "ancestry": [
+          "11. Asia",
+          "14. South-eastern Asia"
+        ],
+        "pronoun": [
+          "1. He/him/his"
+        ],
+        "natural_skin_color": "3. [175, 148, 120]",
+        "apparent_skin_color": "3. [175, 148, 120]",
+        "hairstyle": "5. Down (Short)",
+        "natural_hair_type": "1. Straight",
+        "apparent_hair_type": "1. Straight",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "0. Standing"
+      }
+    },
+    {
+      "image_id": "2730993e-53b8-4b29-a434-577eab5b63eb",
+      "subject_id": "c1dc1c28-70d5-4cfc-95e4-ccf84ea9e930",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/c1dc1c28-70d5-4cfc-95e4-ccf84ea9e930/2730993e-53b8-4b29-a434-577eab5b63eb/main_2730993e-53b8-4b29-a434-577eab5b63eb.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/c1dc1c28-70d5-4cfc-95e4-ccf84ea9e930/2730993e-53b8-4b29-a434-577eab5b63eb/main_annos_2730993e-53b8-4b29-a434-577eab5b63eb.json",
+      "age": "22",
+      "pronoun": "she/her",
+      "skin_group": "light",
+      "region": "Western",
+      "ancestry": "East Asia",
+      "nationality": "['3. American']",
+      "apparent_skin_color": "4. [189, 163, 137]",
+      "hair_type": "straight",
+      "face_bbox": {
+        "x": "679.5",
+        "y": "897.1",
+        "w": "115.1",
+        "h": "140.8"
+      },
+      "image_annotation": {
+        "camera_position": "0. Typical",
+        "lighting": [
+          "0. Lighting from above the head/face"
+        ],
+        "scene": "1. Outdoor: Mountains, hills, desert, sky",
+        "location_country": "United States",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 22,
+        "nationality": [
+          "3. American"
+        ],
+        "ancestry": [
+          "11. Asia",
+          "13. Eastern Asia"
+        ],
+        "pronoun": [
+          "0. She/her/hers"
+        ],
+        "natural_skin_color": "4. [189, 163, 137]",
+        "apparent_skin_color": "4. [189, 163, 137]",
+        "hairstyle": "13. Up (Long)",
+        "natural_hair_type": "1. Straight",
+        "apparent_hair_type": "1. Straight",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "6. Dancing"
+      }
+    },
+    {
+      "image_id": "d8545571-3684-4ba2-b92f-09bd7cb30efa",
+      "subject_id": "70ab671f-83ff-4c38-b059-bdc528851d1b",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/70ab671f-83ff-4c38-b059-bdc528851d1b/d8545571-3684-4ba2-b92f-09bd7cb30efa/main_d8545571-3684-4ba2-b92f-09bd7cb30efa.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/70ab671f-83ff-4c38-b059-bdc528851d1b/d8545571-3684-4ba2-b92f-09bd7cb30efa/main_annos_d8545571-3684-4ba2-b92f-09bd7cb30efa.json",
+      "age": "40",
+      "pronoun": "she/her",
+      "skin_group": "light",
+      "region": "Africa",
+      "ancestry": "Africa",
+      "nationality": "['184. South African']",
+      "apparent_skin_color": "5. [198, 180, 157]",
+      "hair_type": "curly",
+      "face_bbox": {
+        "x": "1211.4",
+        "y": "202.9",
+        "w": "170.6",
+        "h": "267.0"
+      },
+      "image_annotation": {
+        "camera_position": "0. Typical",
+        "lighting": [
+          "0. Lighting from above the head/face",
+          "2. Lighting from in front of the head/face"
+        ],
+        "scene": "1. Outdoor: Mountains, hills, desert, sky",
+        "location_country": "South Africa",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 40,
+        "nationality": [
+          "184. South African"
+        ],
+        "ancestry": [
+          "0. Africa",
+          "4. Southern Africa"
+        ],
+        "pronoun": [
+          "0. She/her/hers"
+        ],
+        "natural_skin_color": "5. [198, 180, 157]",
+        "apparent_skin_color": "5. [198, 180, 157]",
+        "hairstyle": "15. Down (Long)",
+        "natural_hair_type": "2. Wavy",
+        "apparent_hair_type": "3. Curly",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "1. Sitting"
+      }
+    },
+    {
+      "image_id": "4f5f02cf-c35b-4317-90ed-fd1be1650901",
+      "subject_id": "949cf60f-6a55-4bed-84ca-52f425abbcbd",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/949cf60f-6a55-4bed-84ca-52f425abbcbd/4f5f02cf-c35b-4317-90ed-fd1be1650901/main_4f5f02cf-c35b-4317-90ed-fd1be1650901.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/949cf60f-6a55-4bed-84ca-52f425abbcbd/4f5f02cf-c35b-4317-90ed-fd1be1650901/main_annos_4f5f02cf-c35b-4317-90ed-fd1be1650901.json",
+      "age": "20",
+      "pronoun": "he/him",
+      "skin_group": "light",
+      "region": "Asia",
+      "ancestry": "South/SE Asia",
+      "nationality": "['71. Filipino']",
+      "apparent_skin_color": "4. [189, 163, 137]",
+      "hair_type": "",
+      "face_bbox": {
+        "x": "770.5",
+        "y": "241.1",
+        "w": "143.3",
+        "h": "162.5"
+      },
+      "image_annotation": {
+        "camera_position": "0. Typical",
+        "lighting": [
+          "0. Lighting from above the head/face"
+        ],
+        "scene": "6. Outdoor: Sports fields, parks, leisure spaces",
+        "location_country": "Philippines",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 20,
+        "nationality": [
+          "71. Filipino"
+        ],
+        "ancestry": [
+          "11. Asia",
+          "14. South-eastern Asia"
+        ],
+        "pronoun": [
+          "1. He/him/his"
+        ],
+        "natural_skin_color": "2. [164, 131, 103]",
+        "apparent_skin_color": "4. [189, 163, 137]",
+        "hairstyle": "0. None",
+        "natural_hair_type": "2. Wavy",
+        "apparent_hair_type": "0. None",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "7. Running/jogging"
+      }
+    },
+    {
+      "image_id": "cbd59a31-3af8-434f-9db9-b5cbbe4b826d",
+      "subject_id": "fe128333-c075-4f16-ab69-914320afdf8c",
+      "filepath": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/fe128333-c075-4f16-ab69-914320afdf8c/cbd59a31-3af8-434f-9db9-b5cbbe4b826d/main_cbd59a31-3af8-434f-9db9-b5cbbe4b826d.png",
+      "json_path": "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/raw/fhibe_downsampled/fe128333-c075-4f16-ab69-914320afdf8c/cbd59a31-3af8-434f-9db9-b5cbbe4b826d/main_annos_cbd59a31-3af8-434f-9db9-b5cbbe4b826d.json",
+      "age": "63",
+      "pronoun": "she/her",
+      "skin_group": "light",
+      "region": "Other",
+      "ancestry": "Europe",
+      "nationality": "['99. Italian']",
+      "apparent_skin_color": "4. [189, 163, 137]",
+      "hair_type": "wavy",
+      "face_bbox": {
+        "x": "676.1",
+        "y": "365.1",
+        "w": "160.6",
+        "h": "222.1"
+      },
+      "image_annotation": {
+        "camera_position": "0. Typical",
+        "lighting": [
+          "0. Lighting from above the head/face",
+          "5. Lighting from the right of the head/face"
+        ],
+        "scene": "12. Indoor: Home or hotel",
+        "location_country": "Italiana",
+        "weather": [
+          "6. Clear"
+        ]
+      },
+      "ground_truth": {
+        "age": 63,
+        "nationality": [
+          "99. Italian"
+        ],
+        "ancestry": [
+          "17. Europe",
+          "19. Northern Europe"
+        ],
+        "pronoun": [
+          "0. She/her/hers"
+        ],
+        "natural_skin_color": "4. [189, 163, 137]",
+        "apparent_skin_color": "4. [189, 163, 137]",
+        "hairstyle": "5. Down (Short)",
+        "natural_hair_type": "2. Wavy",
+        "apparent_hair_type": "2. Wavy",
+        "natural_eye_color": [
+          "5. Brown"
+        ],
+        "action_body_pose": "0. Standing"
+      }
+    }
+  ]
+}
