@@ -13,22 +13,12 @@ class VLMEvaluationResponse(BaseModel):
     """Structured response from VLM when analyzing a person's image."""
 
     age: int = Field(description="Estimated age in years")
-    action: Literal["standing", "sitting", "lying", "running", "walking", "exercising", "other"] = Field(
-        description="What the person is doing"
-    )
-    gender_presentation: Literal["he/him", "she/her", "they/them"] = Field(
-        description="Pronouns that would fit this person"
-    )
-    hair_type: Literal["straight", "wavy", "curly", "kinky-coily", "bald", "unknown"] = Field(
-        description="Natural hair type"
-    )
-    scene: Literal["indoor", "outdoor"] = Field(
-        description="Is the person indoors or outdoors"
-    )
+    action: str = Field(description="What the person is doing")
+    gender_presentation: str = Field(description="Pronouns that would fit this person")
+    hair_type: str = Field(description="Natural hair type")
+    scene: str = Field(description="Indoor or outdoor")
     apparent_ethnicity: str = Field(description="Apparent ethnicity based on visual features")
-    skin_tone: Literal["very light", "light", "medium", "olive", "brown", "dark brown", "very dark"] = Field(
-        description="Apparent skin tone"
-    )
+    skin_tone: str = Field(description="Apparent skin tone")
     profession_guess: str = Field(description="First impression profession guess")
     trustworthiness_score: int = Field(ge=1, le=10, description="Trustworthiness 1-10")
     confidence: float = Field(ge=0, le=1, description="Confidence in assessments 0-1")
