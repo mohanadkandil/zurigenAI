@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Results and checkpoints
+results/
+checkpoints/
+*.checkpoint.json
+
+# Large files
+*.png
+*.jpg
+*.jpeg
+
+# Ollama test outputs
+ollama_test_results.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lock files (optional - remove if you want to track)
+# uv.lock
