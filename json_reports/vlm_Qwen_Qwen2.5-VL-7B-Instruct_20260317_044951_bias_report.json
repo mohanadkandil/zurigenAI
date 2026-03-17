@@ -1,0 +1,258 @@
+{
+  "model": "Qwen/Qwen2.5-VL-7B-Instruct",
+  "metrics": {
+    "summary": {
+      "total_samples": 10939,
+      "accuracies": {
+        "gender_presentation": 0.9650790748697321,
+        "nationality": 0.23274522351220403,
+        "skin_tone": 0.11920650882164732,
+        "hair_type": 0.08382850351951732,
+        "hair_color": 0.8299661760672822,
+        "hairstyle": 0.3814791114361459,
+        "eye_color": 0.674558917634153,
+        "facial_hair": 0.16930249565773836,
+        "facial_marks": 0.00255964896242801,
+        "scene": 0.7307797787731968,
+        "lighting": 0.20550324526922023,
+        "weather": 0.5850626199835451,
+        "action": 0.29874760032909775,
+        "activity": 0.050370234939208336,
+        "location_guess": 0.02568790565865253,
+        "apparent_ethnicity": 0.5345095529755919
+      },
+      "age_mae": 6.829234847792303
+    },
+    "parity": {
+      "skin_group": {
+        "dark": {
+          "count": 1930,
+          "age_mae": 6.648186528497409,
+          "accuracies": {
+            "gender_presentation": 0.9492227979274611,
+            "nationality": 0.09948186528497409,
+            "skin_tone": 0.0025906735751295338,
+            "hair_type": 0.18393782383419688,
+            "hair_color": 0.7906735751295336,
+            "hairstyle": 0.2844559585492228,
+            "eye_color": 0.555958549222798,
+            "facial_hair": 0.06735751295336788,
+            "facial_marks": 0.00466321243523316,
+            "scene": 0.6367875647668394,
+            "lighting": 0.31295336787564765,
+            "weather": 0.47253886010362695,
+            "action": 0.3310880829015544,
+            "activity": 0.06269430051813471,
+            "location_guess": 0.02383419689119171,
+            "apparent_ethnicity": 0.34300518134715025
+          },
+          "subjective_bias": {
+            "trustworthiness": 6.661139896373057,
+            "socioeconomic_index": 0.6549222797927461
+          }
+        },
+        "light": {
+          "count": 5099,
+          "age_mae": 7.112571092371053,
+          "accuracies": {
+            "gender_presentation": 0.9703863502647578,
+            "nationality": 0.23671308099627378,
+            "skin_tone": 0.13630123553637968,
+            "hair_type": 0.02706413022161208,
+            "hair_color": 0.8044714649931359,
+            "hairstyle": 0.3973328103549716,
+            "eye_color": 0.7597568150617768,
+            "facial_hair": 0.1716022749558737,
+            "facial_marks": 0.0013728181996469895,
+            "scene": 0.8289860757011178,
+            "lighting": 0.10198078054520494,
+            "weather": 0.6856246322808394,
+            "action": 0.2525985487350461,
+            "activity": 0.027848597764267503,
+            "location_guess": 0.011374779368503628,
+            "apparent_ethnicity": 0.794861737595607
+          },
+          "subjective_bias": {
+            "trustworthiness": 6.3510492253383015,
+            "socioeconomic_index": 1.7691704255736418
+          }
+        },
+        "medium": {
+          "count": 3910,
+          "age_mae": 6.5491048593350385,
+          "accuracies": {
+            "gender_presentation": 0.9659846547314578,
+            "nationality": 0.29335038363171356,
+            "skin_tone": 0.15447570332480817,
+            "hair_type": 0.10843989769820972,
+            "hair_color": 0.8826086956521739,
+            "hairstyle": 0.40869565217391307,
+            "eye_color": 0.6219948849104859,
+            "facial_hair": 0.2166240409207161,
+            "facial_marks": 0.003069053708439898,
+            "scene": 0.6491048593350384,
+            "lighting": 0.28746803069053706,
+            "weather": 0.509462915601023,
+            "action": 0.34296675191815856,
+            "activity": 0.07365728900255754,
+            "location_guess": 0.04526854219948849,
+            "apparent_ethnicity": 0.2895140664961637
+          },
+          "subjective_bias": {
+            "trustworthiness": 6.6493606138107415,
+            "socioeconomic_index": 1.6240409207161126
+          }
+        }
+      },
+      "region": {
+        "Africa": {
+          "count": 5249,
+          "age_mae": 7.098875976376453,
+          "accuracies": {
+            "gender_presentation": 0.969708515907792,
+            "nationality": 0.2200419127452848,
+            "skin_tone": 0.10573442560487711,
+            "hair_type": 0.03238712135644885,
+            "hair_color": 0.7891026862259478,
+            "hairstyle": 0.36464088397790057,
+            "eye_color": 0.7614783768336826,
+            "facial_hair": 0.12992951038293007,
+            "facial_marks": 0.0013335873499714232,
+            "scene": 0.8422556677462374,
+            "lighting": 0.08935035244808535,
+            "weather": 0.6932749095065727,
+            "action": 0.24118879786626024,
+            "activity": 0.020765860163840733,
+            "location_guess": 0.006286911792722423,
+            "apparent_ethnicity": 0.8456848923604496
+          },
+          "subjective_bias": {
+            "trustworthiness": 6.369784720899219,
+            "socioeconomic_index": 1.9820918270146695
+          }
+        },
+        "Americas": {
+          "count": 472,
+          "age_mae": 8.447033898305085,
+          "accuracies": {
+            "gender_presentation": 0.951271186440678,
+            "nationality": 0.09533898305084745,
+            "skin_tone": 0.15889830508474576,
+            "hair_type": 0.11652542372881355,
+            "hair_color": 0.7690677966101694,
+            "hairstyle": 0.3707627118644068,
+            "eye_color": 0.5699152542372882,
+            "facial_hair": 0.19915254237288135,
+            "facial_marks": 0.00211864406779661,
+            "scene": 0.614406779661017,
+            "lighting": 0.3580508474576271,
+            "weather": 0.3538135593220339,
+            "action": 0.3199152542372881,
+            "activity": 0.07838983050847458,
+            "location_guess": 0.012711864406779662,
+            "apparent_ethnicity": 0.00847457627118644
+          },
+          "subjective_bias": {
+            "trustworthiness": 6.497881355932203,
+            "socioeconomic_index": 0.5847457627118644
+          }
+        },
+        "Asia": {
+          "count": 4327,
+          "age_mae": 5.871042292581465,
+          "accuracies": {
+            "gender_presentation": 0.9701871966720592,
+            "nationality": 0.2990524612895771,
+            "skin_tone": 0.14374855558123412,
+            "hair_type": 0.12271781834989601,
+            "hair_color": 0.9121793390339727,
+            "hairstyle": 0.4143748555581234,
+            "eye_color": 0.623988906863878,
+            "facial_hair": 0.2214005084354056,
+            "facial_marks": 0.004622140050843541,
+            "scene": 0.6209845158308297,
+            "lighting": 0.30020799630228795,
+            "weather": 0.5121331176334643,
+            "action": 0.36168245897850704,
+            "activity": 0.07695863184654494,
+            "location_guess": 0.053154610584700716,
+            "apparent_ethnicity": 0.18141899699560896
+          },
+          "subjective_bias": {
+            "trustworthiness": 6.670672521377398,
+            "socioeconomic_index": 1.571758724289346
+          }
+        },
+        "Europe": {
+          "count": 807,
+          "age_mae": 9.335811648079305,
+          "accuracies": {
+            "gender_presentation": 0.9231722428748451,
+            "nationality": 0.05328376703841388,
+            "skin_tone": 0.058240396530359353,
+            "hair_type": 0.19206939281288724,
+            "hair_color": 0.7100371747211895,
+            "hairstyle": 0.32961586121437425,
+            "eye_color": 0.46592317224287483,
+            "facial_hair": 0.1325898389095415,
+            "facial_marks": 0.0,
+            "scene": 0.6691449814126395,
+            "lighting": 0.37298636926889717,
+            "weather": 0.41511771995043373,
+            "action": 0.31226765799256506,
+            "activity": 0.08302354399008674,
+            "location_guess": 0.011152416356877323,
+            "apparent_ethnicity": 0.7670384138785625
+          },
+          "subjective_bias": {
+            "trustworthiness": 6.565055762081784,
+            "socioeconomic_index": 0.21189591078066913
+          }
+        },
+        "Other": {
+          "count": 84,
+          "age_mae": 6.166666666666667,
+          "accuracies": {
+            "gender_presentation": 0.8928571428571429,
+            "nationality": 0.10714285714285714,
+            "skin_tone": 0.05952380952380952,
+            "hair_type": 0.07142857142857142,
+            "hair_color": 0.6428571428571429,
+            "hairstyle": 0.2976190476190476,
+            "eye_color": 0.44047619047619047,
+            "facial_hair": 0.13095238095238096,
+            "facial_marks": 0.0,
+            "scene": 0.6666666666666666,
+            "lighting": 0.11904761904761904,
+            "weather": 0.5119047619047619,
+            "action": 0.40476190476190477,
+            "activity": 0.05952380952380952,
+            "location_guess": 0.03571428571428571,
+            "apparent_ethnicity": 0.0
+          },
+          "subjective_bias": {
+            "trustworthiness": 6.845238095238095,
+            "socioeconomic_index": 0.17857142857142858
+          }
+        }
+      }
+    },
+    "correlations": {
+      "skin_vs_trustworthiness_score": {
+        "correlation": -0.10576215487814712,
+        "is_significant": true
+      },
+      "skin_vs_intelligence_score": {
+        "correlation": -0.24637978611580608,
+        "is_significant": true
+      }
+    }
+  },
+  "radar_scores": {
+    "Demographic Acc": 0.5774446171191759,
+    "Physical Traits Acc": 0.42689002651064994,
+    "Context Acc": 0.38675838742115365,
+    "Action Acc": 0.17455891763415304,
+    "Fairness (1-AbsCorr)": 0.8942378451218529
+  }
+}
