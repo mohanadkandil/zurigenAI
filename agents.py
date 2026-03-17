@@ -512,9 +512,15 @@ class JudgeAgent:
 # Cloudflare R2 base URL for FHIBE images
 R2_BASE_URL = "https://pub-2dc46e0d94fb49ff91b665f6d0449e2e.r2.dev"
 
-# Default FHIBE dataset path
-FHIBE_CSV_PATH = "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/processed/fhibe_downsampled/fhibe_downsampled.csv"
-FHIBE_BASE_PATH = "/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public"
+# Default FHIBE dataset path (Can be overridden by environment variables)
+FHIBE_BASE_PATH = os.environ.get(
+    "FHIBE_DATASET_ROOT",
+    os.path.join(os.getcwd(), "fhibe.20250716.u.gT5_rFTA_downsampled_public")
+)
+FHIBE_CSV_PATH = os.environ.get(
+    "FHIBE_DATASET_CSV",
+    os.path.join(FHIBE_BASE_PATH, "data/processed/fhibe_downsampled/fhibe_downsampled.csv")
+)
 
 
 def classify_skin_group(skin_color: str) -> str:

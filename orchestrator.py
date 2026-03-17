@@ -50,6 +50,7 @@ from agents import (
     ReporterAgent,
     EvaluationResult,
     ATTRIBUTE_GROUND_TRUTH_MAP,
+    FHIBE_CSV_PATH,
 )
 from schemas import VLMEvaluationResponse, JudgeResponse
 
@@ -544,17 +545,17 @@ Run separately for each grouping to get controlled experiments!
     else:
         max_samples = 100  # Default
 
-    # Determine sample file - default to full CSV
+    # Determine sample file - default to the path set in agents.py
     if args.sample_file:
         sample_file = Path(args.sample_file)
         if not sample_file.exists():
             sample_file = Path(__file__).parent / args.sample_file
     else:
-        # Default to full FHIBE CSV
-        sample_file = Path("/Users/mohannedkandil/web/zuri/genai/fhibe.20250716.u.gT5_rFTA_downsampled_public/data/processed/fhibe_downsampled/fhibe_downsampled.csv")
+        sample_file = Path(FHIBE_CSV_PATH)
 
     if not sample_file.exists():
         console.print(f"[red]Sample file not found: {sample_file}[/red]")
+        console.print(f"[dim]Try setting FHIBE_DATASET_ROOT or FHIBE_DATASET_CSV environment variables.[/dim]")
         return
 
     # Load sample count from file

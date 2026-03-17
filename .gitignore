@@ -37,3 +37,7 @@ Thumbs.db
 
 # Lock files (optional - remove if you want to track)
 # uv.lock
+
+data/
+
+**.tar.gz
