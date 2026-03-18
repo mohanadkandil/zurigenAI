@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FHIBE — VLM Bias Evaluation Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:        #060b17;
+      --bg-card:   #0c1526;
+      --bg-card-h: #111d35;
+      --border:    #1a2a45;
+      --border-l:  #243654;
+      --text:      #e2e8f0;
+      --text-s:    #94a3b8;
+      --text-m:    #475569;
+      --phi:       #fb923c;
+      --phi-a:     rgba(251,146,60,.15);
+      --phi-b:     rgba(251,146,60,.8);
+      --q7b:       #a78bfa;
+      --q7b-a:     rgba(167,139,250,.15);
+      --q7b-b:     rgba(167,139,250,.8);
+      --q30:       #34d399;
+      --q30-a:     rgba(52,211,153,.15);
+      --q30-b:     rgba(52,211,153,.8);
+      --danger:    #f87171;
+      --warn:      #fbbf24;
+      --accent:    #38bdf8;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(6,11,23,.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display:flex; align-items:center; gap:.75rem; }
+    .nav-icon {
+      width:32px; height:32px; border-radius:8px;
+      background: linear-gradient(135deg,#6366f1,#38bdf8);
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; font-weight:700; color:#fff;
+    }
+    .nav-title { font-size:.9rem; font-weight:600; }
+    .nav-sub   { font-size:.7rem; color:var(--text-m); }
+    .nav-pills { display:flex; gap:.5rem; }
+    .pill {
+      padding:.25rem .75rem; border-radius:999px;
+      font-size:.7rem; font-weight:500; border:1px solid;
+    }
+    .pill.phi  { color:var(--phi); border-color:var(--phi); background:var(--phi-a); }
+    .pill.q7b  { color:var(--q7b); border-color:var(--q7b); background:var(--q7b-a); }
+    .pill.q30  { color:var(--q30); border-color:var(--q30); background:var(--q30-a); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 5rem 2rem 3rem; text-align:center;
+      background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,.08) 0%, transparent 70%);
+      position: relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1' fill='%231e2d4a' fill-opacity='0.4'/%3E%3C/svg%3E");
+    }
+    .hero-inner { position:relative; z-index:1; max-width:820px; margin:0 auto; }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:.5rem;
+      padding:.375rem 1rem; border-radius:999px;
+      background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.3);
+      font-size:.72rem; color:#818cf8; font-weight:500;
+      letter-spacing:.05em; text-transform:uppercase; margin-bottom:1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem,5vw,3.5rem); font-weight:800; line-height:1.2; margin-bottom:1rem;
+      background: linear-gradient(135deg,#e2e8f0,#94a3b8);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg,#6366f1,#38bdf8);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero-desc { font-size:1.05rem; color:var(--text-s); max-width:620px; margin:0 auto 2.5rem; }
+    .hero-stats { display:flex; justify-content:center; gap:3rem; flex-wrap:wrap; }
+    .hero-stat { text-align:center; }
+    .hero-stat-v { font-size:1.75rem; font-weight:700; color:var(--accent); }
+    .hero-stat-l { font-size:.72rem; color:var(--text-m); text-transform:uppercase; letter-spacing:.05em; }
+
+    /* ── LAYOUT ── */
+    .container { max-width:1400px; margin:0 auto; padding:0 2rem; }
+    section { padding:3rem 0; }
+    .sec-label { font-size:.7rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.4rem; }
+    .sec-title { font-size:1.75rem; font-weight:700; }
+    .sec-desc  { font-size:.88rem; color:var(--text-s); margin-top:.4rem; max-width:700px; }
+    .sec-head  { margin-bottom:2rem; }
+    hr { border:none; border-top:1px solid var(--border); }
+
+    /* ── CARDS ── */
+    .card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:1.5rem;
+      transition: border-color .2s, background .2s;
+    }
+    .card:hover { border-color:var(--border-l); background:var(--bg-card-h); }
+
+    /* ── MODEL GRID ── */
+    .model-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+    .mc {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:1.5rem; position:relative; overflow:hidden;
+    }
+    .mc::before {
+      content:''; position:absolute; top:0; left:0; right:0;
+      height:3px; border-radius:16px 16px 0 0;
+    }
+    .mc.phi::before { background:var(--phi); }
+    .mc.q7b::before { background:var(--q7b); }
+    .mc.q30::before { background:var(--q30); }
+    .mc-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1.25rem; }
+    .mc-org  { font-size:.72rem; color:var(--text-m); }
+    .mc-name { font-size:.95rem; font-weight:600; }
+    .mc-badge {
+      padding:.25rem .625rem; border-radius:6px;
+      font-size:.62rem; font-weight:600; text-transform:uppercase; letter-spacing:.04em;
+    }
+    .mc-badge.best { background:rgba(52,211,153,.1); color:var(--q30); }
+    .mc-badge.mid  { background:rgba(167,139,250,.1); color:var(--q7b); }
+    .mc-badge.base { background:rgba(251,146,60,.1);  color:var(--phi); }
+    .mc-stats { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .mc-sv { font-size:1.4rem; font-weight:700; }
+    .mc-sk { font-size:.68rem; color:var(--text-m); text-transform:uppercase; letter-spacing:.04em; }
+    .mc-sv.phi { color:var(--phi); }
+    .mc-sv.q7b { color:var(--q7b); }
+    .mc-sv.q30 { color:var(--q30); }
+    .mc-radar { margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid var(--border); }
+    .mc-radar-lbl { font-size:.68rem; color:var(--text-m); text-transform:uppercase; letter-spacing:.04em; margin-bottom:.75rem; }
+    .mini-row { display:flex; align-items:center; gap:.5rem; margin-bottom:.4rem; }
+    .mini-lbl { font-size:.63rem; color:var(--text-s); width:82px; flex-shrink:0; }
+    .mini-track { flex:1; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .mini-fill  { height:100%; border-radius:2px; }
+    .mini-val   { font-size:.63rem; color:var(--text-m); width:28px; text-align:right; }
+
+    /* ── BIAS SECTION ── */
+    .bias-box {
+      background: linear-gradient(135deg,rgba(239,68,68,.03),rgba(251,191,36,.03));
+      border:1px solid rgba(239,68,68,.15); border-radius:24px; padding:2.5rem; margin:1.5rem 0;
+    }
+    .bias-alert {
+      display:flex; align-items:center; gap:.75rem;
+      background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.2);
+      border-radius:10px; padding:.875rem 1.25rem; margin-bottom:2rem;
+    }
+    .bias-alert-icon { font-size:1.2rem; flex-shrink:0; }
+    .bias-alert-txt  { font-size:.875rem; color:#fca5a5; }
+    .bias-alert-txt strong { color:#f87171; }
+    .bias-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
+    .bias-metric-title { font-size:.875rem; font-weight:600; margin-bottom:1.25rem; }
+    .bias-metric-sub { font-size:.72rem; color:var(--text-m); font-weight:400; }
+    .corr-rows { display:flex; flex-direction:column; gap:.875rem; }
+    .corr-row  { display:flex; align-items:center; gap:.75rem; }
+    .corr-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .corr-name { font-size:.72rem; color:var(--text-s); width:130px; flex-shrink:0; }
+    .corr-bar-wrap {
+      flex:1; position:relative; height:24px;
+      background:rgba(255,255,255,.04); border-radius:4px; overflow:hidden;
+    }
+    .corr-bar { position:absolute; top:0; bottom:0; border-radius:4px; }
+    .corr-midline {
+      position:absolute; top:0; bottom:0; left:50%; width:1px;
+      background:rgba(255,255,255,.2);
+    }
+    .corr-val { font-size:.75rem; font-weight:600; width:50px; text-align:right; flex-shrink:0; }
+    .corr-sig { font-size:.63rem; padding:.15rem .4rem; border-radius:4px; font-weight:500; }
+    .corr-sig.sig    { background:rgba(239,68,68,.1); color:#f87171; }
+    .corr-sig.not-sig{ background:rgba(52,211,153,.1); color:#34d399; }
+
+    /* ── CHARTS ROW ── */
+    .charts-row { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+    .chart-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:2rem; }
+    .chart-title { font-size:1rem; font-weight:600; margin-bottom:.2rem; }
+    .chart-sub   { font-size:.78rem; color:var(--text-m); margin-bottom:1.5rem; }
+
+    /* ── SKIN GROUP ── */
+    .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+    .skin-card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; }
+    .skin-head { display:flex; align-items:center; gap:.625rem; margin-bottom:1.25rem; }
+    .skin-dot  { width:12px; height:12px; border-radius:50%; }
+    .skin-dot.dark   { background:#374151; border:2px solid #6b7280; }
+    .skin-dot.medium { background:#92400e; border:2px solid #d97706; }
+    .skin-dot.light  { background:#fef3c7; border:2px solid #fbbf24; }
+    .skin-name { font-size:.875rem; font-weight:600; }
+    .trust-row { display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem; }
+    .trust-ind { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+    .trust-lbl { font-size:.7rem; color:var(--text-s); flex:1; }
+    .trust-val { font-size:.875rem; font-weight:600; }
+    .trust-sub { font-size:.63rem; color:var(--text-m); }
+
+    /* ── FOOTER ── */
+    footer { border-top:1px solid var(--border); padding:2rem; text-align:center; }
+    footer p { font-size:.8rem; color:var(--text-m); }
+    footer a { color:var(--accent); text-decoration:none; }
+
+    @media (max-width:900px) {
+      .model-grid, .skin-grid { grid-template-columns:1fr; }
+      .bias-grid, .charts-row { grid-template-columns:1fr; }
+      .nav-pills { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-icon">F</div>
+    <div>
+      <div class="nav-title">FHIBE Dashboard</div>
+      <div class="nav-sub">Fairness in Human-Image Bias Evaluation</div>
+    </div>
+  </div>
+  <div class="nav-pills">
+    <span class="pill phi">Phi-3.5-vision</span>
+    <span class="pill q7b">Qwen2.5-VL-7B</span>
+    <span class="pill q30">Qwen3-VL-30B ★</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span>●</span> FHIBE · Sony AI Ethics Lab</div>
+    <h1>VLM Bias Evaluation<br><span>at Scale</span></h1>
+    <p class="hero-desc">
+      Comprehensive fairness analysis of 3 Vision-Language Models across 10,000+ images —
+      measuring accuracy disparities and subjective bias in AI perception of human images.
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-v">~31K</div><div class="hero-stat-l">Total Evaluations</div></div>
+      <div class="hero-stat"><div class="hero-stat-v">3</div><div class="hero-stat-l">VLMs Tested</div></div>
+      <div class="hero-stat"><div class="hero-stat-v">16</div><div class="hero-stat-l">Attributes Scored</div></div>
+      <div class="hero-stat"><div class="hero-stat-v">5</div><div class="hero-stat-l">Demographic Groups</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- MODEL CARDS -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-label">Model Overview</div>
+      <h2 class="sec-title">Three models, one benchmark</h2>
+      <p class="sec-desc">Each model evaluated on identical FHIBE samples. Fairness measured via Pearson correlation between ground-truth skin tone and subjective VLM scores.</p>
+    </div>
+    <div class="model-grid">
+
+      <!-- Phi -->
+      <div class="mc phi">
+        <div class="mc-head">
+          <div><div class="mc-org">Microsoft</div><div class="mc-name">Phi-3.5-vision-instruct</div></div>
+          <span class="mc-badge base">Baseline</span>
+        </div>
+        <div class="mc-stats">
+          <div><div class="mc-sv phi">10,429</div><div class="mc-sk">Samples</div></div>
+          <div><div class="mc-sv phi">8.94 yr</div><div class="mc-sk">Age MAE</div></div>
+          <div><div class="mc-sv phi">86.2%</div><div class="mc-sk">Gender Acc</div></div>
+          <div><div class="mc-sv phi">0.793</div><div class="mc-sk">Fairness Score</div></div>
+        </div>
+        <div class="mc-radar">
+          <div class="mc-radar-lbl">Radar Profile</div>
+          <div id="phi-bars"></div>
+        </div>
+      </div>
+
+      <!-- Qwen 7B -->
+      <div class="mc q7b">
+        <div class="mc-head">
+          <div><div class="mc-org">Qwen / Alibaba</div><div class="mc-name">Qwen2.5-VL-7B-Instruct</div></div>
+          <span class="mc-badge mid">Efficient</span>
+        </div>
+        <div class="mc-stats">
+          <div><div class="mc-sv q7b">10,939</div><div class="mc-sk">Samples</div></div>
+          <div><div class="mc-sv q7b">6.83 yr</div><div class="mc-sk">Age MAE</div></div>
+          <div><div class="mc-sv q7b">96.5%</div><div class="mc-sk">Gender Acc</div></div>
+          <div><div class="mc-sv q7b">0.894</div><div class="mc-sk">Fairness Score</div></div>
+        </div>
+        <div class="mc-radar">
+          <div class="mc-radar-lbl">Radar Profile</div>
+          <div id="q7b-bars"></div>
+        </div>
+      </div>
+
+      <!-- Qwen 30B -->
+      <div class="mc q30">
+        <div class="mc-head">
+          <div><div class="mc-org">Qwen / Alibaba</div><div class="mc-name">Qwen3-VL-30B-A3B-Instruct</div></div>
+          <span class="mc-badge best">Best Overall</span>
+        </div>
+        <div class="mc-stats">
+          <div><div class="mc-sv q30">10,364</div><div class="mc-sk">Samples</div></div>
+          <div><div class="mc-sv q30">5.30 yr</div><div class="mc-sk">Age MAE</div></div>
+          <div><div class="mc-sv q30">96.8%</div><div class="mc-sk">Gender Acc</div></div>
+          <div><div class="mc-sv q30">0.911</div><div class="mc-sk">Fairness Score</div></div>
+        </div>
+        <div class="mc-radar">
+          <div class="mc-radar-lbl">Radar Profile</div>
+          <div id="q30-bars"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- RADAR -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-label">Performance Radar</div>
+      <h2 class="sec-title">Multi-dimensional comparison</h2>
+      <p class="sec-desc">Each axis represents a performance category. Higher scores are always better. Fairness = 1 − |Pearson r| between skin tone and subjective VLM scores.</p>
+    </div>
+    <div class="chart-card">
+      <canvas id="radarChart" height="380"></canvas>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- BIAS -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-label">Critical Finding</div>
+      <h2 class="sec-title">Skin tone bias in subjective scoring</h2>
+      <p class="sec-desc">All models assign lower trustworthiness and intelligence scores to darker-skinned individuals. These correlations are statistically significant (p &lt; 0.05) in most cases.</p>
+    </div>
+    <div class="bias-box">
+      <div class="bias-alert">
+        <span class="bias-alert-icon">⚠</span>
+        <div class="bias-alert-txt">
+          <strong>Statistically Significant Bias Detected:</strong> Darker skin tone is consistently associated with lower
+          trustworthiness and intelligence scores assigned by all three VLMs — constituting evidence of systematic racial bias in AI perception.
+          Qwen3-VL-30B shows the weakest bias and is the only model where intelligence-score bias is not significant.
+        </div>
+      </div>
+      <div class="bias-grid">
+        <div>
+          <div class="bias-metric-title">Skin Tone vs. Trustworthiness <span class="bias-metric-sub">(Pearson r, all p&lt;0.05)</span></div>
+          <div class="corr-rows" id="trust-corr"></div>
+        </div>
+        <div>
+          <div class="bias-metric-title">Skin Tone vs. Intelligence <span class="bias-metric-sub">(Pearson r)</span></div>
+          <div class="corr-rows" id="intel-corr"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ACCURACY -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-label">Accuracy Analysis</div>
+      <h2 class="sec-title">Attribute-by-attribute breakdown</h2>
+      <p class="sec-desc">Accuracy across all 16 evaluated attributes. Qwen3-30B leads in most categories; all models struggle with location and activity.</p>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Accuracy by Attribute</div>
+        <div class="chart-sub">All models compared — higher is better</div>
+        <canvas id="attrChart" height="520"></canvas>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+        <div class="chart-card">
+          <div class="chart-title">Age Estimation Error (MAE)</div>
+          <div class="chart-sub">Years off on average — lower is better</div>
+          <canvas id="ageChart" height="200"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Accuracy by Category</div>
+          <div class="chart-sub">Aggregated radar categories</div>
+          <canvas id="catChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- PARITY -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-label">Demographic Parity</div>
+      <h2 class="sec-title">Trustworthiness by skin group</h2>
+      <p class="sec-desc">Average trustworthiness score assigned per image, broken down by ground-truth skin group. Perfectly fair models would show equal scores across all groups.</p>
+    </div>
+    <div class="skin-grid">
+      <div class="skin-card">
+        <div class="skin-head"><div class="skin-dot dark"></div><div class="skin-name">Dark Skin Group</div></div>
+        <div id="trust-dark"></div>
+      </div>
+      <div class="skin-card">
+        <div class="skin-head"><div class="skin-dot medium"></div><div class="skin-name">Medium Skin Group</div></div>
+        <div id="trust-medium"></div>
+      </div>
+      <div class="skin-card">
+        <div class="skin-head"><div class="skin-dot light"></div><div class="skin-name">Light Skin Group</div></div>
+        <div id="trust-light"></div>
+      </div>
+    </div>
+    <div class="chart-card" style="margin-top:1.5rem;">
+      <div class="chart-title">Trustworthiness by Skin Group — All Models</div>
+      <div class="chart-sub">Scale 1–10. Equitable models would show equal bars across all skin groups.</div>
+      <canvas id="parityChart" height="260"></canvas>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- REGIONAL -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-label">Regional Analysis</div>
+      <h2 class="sec-title">Performance by geographic region</h2>
+      <p class="sec-desc">Accuracy and trustworthiness differ significantly by region, reflecting potential geographic bias in VLM training data.</p>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Gender Accuracy by Region</div>
+        <div class="chart-sub">One of the most reliably-predicted attributes</div>
+        <canvas id="regionGenderChart" height="300"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Trustworthiness Score by Region</div>
+        <div class="chart-sub">Subjective score assigned to images per region (scale 1–10)</div>
+        <canvas id="regionTrustChart" height="300"></canvas>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>FHIBE Bias Evaluation System · Dataset by <a href="#">Sony AI Ethics Lab</a> · Pipeline by <a href="#">ZurigenAI</a></p>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const MODELS = [
+  {
+    id: 'phi', name: 'Phi-3.5-vision', org: 'Microsoft',
+    color: '#fb923c', ca: 'rgba(251,146,60,.15)', cb: 'rgba(251,146,60,.8)',
+    samples: 10429, ageMae: 8.944,
+    acc: {
+      gender_presentation:.8624, nationality:.1447, apparent_ethnicity:.1867,
+      skin_tone:.1010, hair_type:.1572, hair_color:.7811, hairstyle:.3022,
+      eye_color:.0660, facial_hair:.0668, facial_marks:.0002,
+      scene:.0588, lighting:.0753, weather:.0476, location_guess:.0028,
+      action:.2633, activity:.0459
+    },
+    radar: { 'Demographic Acc':.3979, 'Physical Traits Acc':.2763, 'Context Acc':.0461, 'Action Acc':.1546, 'Fairness':.7927 },
+    corr: { trust:{ v:-.2073, sig:true }, intel:{ v:-.2115, sig:true } },
+    skin: {
+      dark:  { trust:7.746, n:1823 },
+      medium:{ trust:7.539, n:3682 },
+      light: { trust:6.867, n:4924 }
+    },
+    region: {
+      Africa:  { gender:.8370, trust:6.887, n:5069 },
+      Americas:{ gender:.8471, trust:7.136, n:425 },
+      Asia:    { gender:.8956, trust:7.696, n:4118 },
+      Europe:  { gender:.8637, trust:7.343, n:741 },
+      Other:   { gender:.8289, trust:8.118, n:76 }
+    }
+  },
+  {
+    id: 'q7b', name: 'Qwen2.5-VL-7B', org: 'Qwen / Alibaba',
+    color: '#a78bfa', ca: 'rgba(167,139,250,.15)', cb: 'rgba(167,139,250,.8)',
+    samples: 10939, ageMae: 6.829,
+    acc: {
+      gender_presentation:.9651, nationality:.2327, apparent_ethnicity:.5345,
+      skin_tone:.1192, hair_type:.0838, hair_color:.8300, hairstyle:.3815,
+      eye_color:.6746, facial_hair:.1693, facial_marks:.0026,
+      scene:.7308, lighting:.2055, weather:.5851, location_guess:.0257,
+      action:.2987, activity:.0504
+    },
+    radar: { 'Demographic Acc':.5774, 'Physical Traits Acc':.4269, 'Context Acc':.3868, 'Action Acc':.1746, 'Fairness':.8942 },
+    corr: { trust:{ v:-.1058, sig:true }, intel:{ v:-.2464, sig:true } },
+    skin: {
+      dark:  { trust:6.661, n:1930 },
+      medium:{ trust:6.649, n:3910 },
+      light: { trust:6.351, n:5099 }
+    },
+    region: {
+      Africa:  { gender:.9697, trust:6.370, n:5249 },
+      Americas:{ gender:.9513, trust:6.498, n:472 },
+      Asia:    { gender:.9702, trust:6.671, n:4327 },
+      Europe:  { gender:.9232, trust:6.565, n:807 },
+      Other:   { gender:.8929, trust:6.845, n:84 }
+    }
+  },
+  {
+    id: 'q30', name: 'Qwen3-VL-30B', org: 'Qwen / Alibaba',
+    color: '#34d399', ca: 'rgba(52,211,153,.15)', cb: 'rgba(52,211,153,.8)',
+    samples: 10364, ageMae: 5.303,
+    acc: {
+      gender_presentation:.9683, nationality:.3451, apparent_ethnicity:.4646,
+      skin_tone:.2419, hair_type:.2314, hair_color:.8407, hairstyle:.4535,
+      eye_color:.5939, facial_hair:.1512, facial_marks:.0033,
+      scene:.7629, lighting:.1525, weather:.2127, location_guess:.1676,
+      action:.3950, activity:.0782
+    },
+    radar: { 'Demographic Acc':.5927, 'Physical Traits Acc':.4770, 'Context Acc':.3239, 'Action Acc':.2366, 'Fairness':.9105 },
+    corr: { trust:{ v:-.0895, sig:true }, intel:{ v:-.0168, sig:false } },
+    skin: {
+      dark:  { trust:6.898, n:1863 },
+      medium:{ trust:6.852, n:3713 },
+      light: { trust:6.742, n:4788 }
+    },
+    region: {
+      Africa:  { gender:.9727, trust:6.767, n:4907 },
+      Americas:{ gender:.9665, trust:6.815, n:448 },
+      Asia:    { gender:.9720, trust:6.870, n:4143 },
+      Europe:  { gender:.9310, trust:6.725, n:783 },
+      Other:   { gender:.8795, trust:7.024, n:83 }
+    }
+  }
+];
+
+// ── MINI BARS ────────────────────────────────────────────────────────────────
+const RADAR_LABELS = ['Demographic Acc','Physical Traits Acc','Context Acc','Action Acc','Fairness'];
+const RADAR_SHORT  = ['Demographic','Physical Traits','Context','Action','Fairness'];
+
+MODELS.forEach(m => {
+  const el = document.getElementById(`${m.id}-bars`);
+  RADAR_LABELS.forEach((dim, i) => {
+    const pct = Math.round(m.radar[dim] * 100);
+    el.innerHTML += `
+      <div class="mini-row">
+        <span class="mini-lbl">${RADAR_SHORT[i]}</span>
+        <div class="mini-track"><div class="mini-fill" style="width:${pct}%;background:${m.color}"></div></div>
+        <span class="mini-val">${pct}%</span>
+      </div>`;
+  });
+});
+
+// ── CORRELATION ROWS ─────────────────────────────────────────────────────────
+function renderCorr(elId, key) {
+  const el = document.getElementById(elId);
+  MODELS.forEach(m => {
+    const c = m.corr[key];
+    const absV = Math.abs(c.v);
+    const barW = Math.min(absV * 200, 50); // max 50% (half track)
+    const vCol = absV > 0.15 ? '#f87171' : '#fbbf24';
+    el.innerHTML += `
+      <div class="corr-row">
+        <div class="corr-dot" style="background:${m.color}"></div>
+        <div class="corr-name">${m.name}</div>
+        <div class="corr-bar-wrap">
+          <div class="corr-bar" style="right:50%;width:${barW}%;left:auto;background:linear-gradient(to left,rgba(239,68,68,.6),rgba(239,68,68,.1))"></div>
+          <div class="corr-midline"></div>
+        </div>
+        <div class="corr-val" style="color:${vCol}">${c.v.toFixed(3)}</div>
+        <span class="corr-sig ${c.sig ? 'sig' : 'not-sig'}">${c.sig ? 'p<0.05' : 'n.s.'}</span>
+      </div>`;
+  });
+}
+renderCorr('trust-corr', 'trust');
+renderCorr('intel-corr', 'intel');
+
+// ── SKIN TRUST CARDS ─────────────────────────────────────────────────────────
+['dark','medium','light'].forEach(sg => {
+  const el = document.getElementById(`trust-${sg}`);
+  MODELS.forEach(m => {
+    const d = m.skin[sg];
+    el.innerHTML += `
+      <div class="trust-row">
+        <div class="trust-ind" style="background:${m.color}"></div>
+        <div class="trust-lbl">${m.name}</div>
+        <div><div class="trust-val">${d.trust.toFixed(2)}</div><div class="trust-sub">n=${d.n.toLocaleString()}</div></div>
+      </div>`;
+  });
+});
+
+// ── CHART.JS GLOBAL ──────────────────────────────────────────────────────────
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#1a2a45';
+const font = { family:"'Inter',-apple-system,sans-serif" };
+const tip = {
+  backgroundColor:'#0c1526', borderColor:'#1a2a45', borderWidth:1,
+  titleColor:'#e2e8f0', bodyColor:'#94a3b8'
+};
+
+// ── RADAR ────────────────────────────────────────────────────────────────────
+new Chart(document.getElementById('radarChart'), {
+  type: 'radar',
+  data: {
+    labels: ['Demographic\nAccuracy','Physical Traits\nAccuracy','Context\nAccuracy','Action\nAccuracy','Fairness\n(1−|r|)'],
+    datasets: MODELS.map(m => ({
+      label: m.name,
+      data: RADAR_LABELS.map(k => m.radar[k]),
+      backgroundColor: m.ca, borderColor: m.cb, borderWidth: 2.5,
+      pointBackgroundColor: m.color, pointBorderColor:'#060b17', pointBorderWidth:2,
+      pointRadius:5, pointHoverRadius:7
+    }))
+  },
+  options: {
+    responsive:true,
+    plugins: {
+      legend: { position:'top', labels:{ color:'#94a3b8', font:{...font,size:12}, usePointStyle:true, padding:20 } },
+      tooltip: { ...tip, callbacks:{ label: c => `${c.dataset.label}: ${(c.raw*100).toFixed(1)}%` } }
+    },
+    scales: { r: {
+      min:0, max:1,
+      ticks:{ stepSize:.2, backdropColor:'transparent', color:'#475569', font:{size:9}, callback:v=>`${Math.round(v*100)}%` },
+      grid:{ color:'#1a2a45' }, angleLines:{ color:'#1a2a45' },
+      pointLabels:{ color:'#94a3b8', font:{...font,size:11} }
+    }}
+  }
+});
+
+// ── ATTRIBUTE CHART ───────────────────────────────────────────────────────────
+const ATTR_ORDER = [
+  'gender_presentation','nationality','apparent_ethnicity',
+  'skin_tone','hair_type','hair_color','hairstyle','eye_color','facial_hair','facial_marks',
+  'scene','lighting','weather','location_guess',
+  'action','activity'
+];
+const ATTR_LABEL = {
+  gender_presentation:'Gender Presentation', nationality:'Nationality', apparent_ethnicity:'Apparent Ethnicity',
+  skin_tone:'Skin Tone', hair_type:'Hair Type', hair_color:'Hair Color', hairstyle:'Hairstyle',
+  eye_color:'Eye Color', facial_hair:'Facial Hair', facial_marks:'Facial Marks',
+  scene:'Scene', lighting:'Lighting', weather:'Weather', location_guess:'Location Guess',
+  action:'Action', activity:'Activity'
+};
+
+new Chart(document.getElementById('attrChart'), {
+  type: 'bar',
+  data: {
+    labels: ATTR_ORDER.map(k => ATTR_LABEL[k]),
+    datasets: MODELS.map(m => ({
+      label: m.name,
+      data: ATTR_ORDER.map(k => +(m.acc[k]*100).toFixed(1)),
+      backgroundColor: m.ca, borderColor: m.cb, borderWidth:1.5, borderRadius:3
+    }))
+  },
+  options: {
+    indexAxis:'y', responsive:true,
+    plugins: {
+      legend:{ position:'top', labels:{ color:'#94a3b8', font:{...font,size:11}, usePointStyle:true } },
+      tooltip:{ ...tip, callbacks:{ label:c=>`${c.dataset.label}: ${c.raw}%` } }
+    },
+    scales: {
+      x:{ min:0, max:100, ticks:{ color:'#475569', callback:v=>`${v}%` }, grid:{ color:'#1a2a45' } },
+      y:{ ticks:{ color:'#94a3b8', font:{size:10} }, grid:{ display:false } }
+    }
+  }
+});
+
+// ── AGE MAE ───────────────────────────────────────────────────────────────────
+new Chart(document.getElementById('ageChart'), {
+  type: 'bar',
+  data: {
+    labels: MODELS.map(m => m.name),
+    datasets: [{
+      label:'Age MAE (yrs)',
+      data: MODELS.map(m => m.ageMae.toFixed(2)),
+      backgroundColor: MODELS.map(m => m.ca),
+      borderColor: MODELS.map(m => m.cb),
+      borderWidth:2, borderRadius:8
+    }]
+  },
+  options: {
+    responsive:true,
+    plugins: {
+      legend:{ display:false },
+      tooltip:{ ...tip, callbacks:{ label:c=>`MAE: ${c.raw} years` } }
+    },
+    scales: {
+      y:{ ticks:{ color:'#475569' }, grid:{ color:'#1a2a45' }, title:{ display:true, text:'Years (lower = better)', color:'#475569', font:{size:10} } },
+      x:{ ticks:{ color:'#94a3b8' }, grid:{ display:false } }
+    }
+  }
+});
+
+// ── CATEGORY CHART ────────────────────────────────────────────────────────────
+new Chart(document.getElementById('catChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Demographic','Physical Traits','Context','Action'],
+    datasets: MODELS.map(m => ({
+      label: m.name,
+      data: ['Demographic Acc','Physical Traits Acc','Context Acc','Action Acc'].map(k => +(m.radar[k]*100).toFixed(1)),
+      backgroundColor: m.ca, borderColor: m.cb, borderWidth:1.5, borderRadius:4
+    }))
+  },
+  options: {
+    responsive:true,
+    plugins: {
+      legend:{ position:'top', labels:{ color:'#94a3b8', font:{...font,size:10}, usePointStyle:true } },
+      tooltip:{ ...tip, callbacks:{ label:c=>`${c.dataset.label}: ${c.raw}%` } }
+    },
+    scales: {
+      y:{ min:0, max:100, ticks:{ color:'#475569', callback:v=>`${v}%` }, grid:{ color:'#1a2a45' } },
+      x:{ ticks:{ color:'#94a3b8', font:{size:10} }, grid:{ display:false } }
+    }
+  }
+});
+
+// ── PARITY CHART ──────────────────────────────────────────────────────────────
+new Chart(document.getElementById('parityChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Dark','Medium','Light'],
+    datasets: MODELS.map(m => ({
+      label: m.name,
+      data: ['dark','medium','light'].map(sg => +m.skin[sg].trust.toFixed(2)),
+      backgroundColor: m.ca, borderColor: m.cb, borderWidth:2, borderRadius:6
+    }))
+  },
+  options: {
+    responsive:true,
+    plugins: {
+      legend:{ position:'top', labels:{ color:'#94a3b8', font:{...font,size:12}, usePointStyle:true } },
+      tooltip:{ ...tip, callbacks:{ label:c=>`${c.dataset.label}: ${(+c.raw).toFixed(2)}/10` } }
+    },
+    scales: {
+      y:{ min:5, max:9, ticks:{ color:'#475569' }, grid:{ color:'#1a2a45' }, title:{ display:true, text:'Avg Trustworthiness (1–10)', color:'#475569', font:{size:10} } },
+      x:{ ticks:{ color:'#94a3b8' }, grid:{ display:false } }
+    }
+  }
+});
+
+// ── REGION CHARTS ─────────────────────────────────────────────────────────────
+const REGIONS = ['Africa','Americas','Asia','Europe','Other'];
+
+new Chart(document.getElementById('regionGenderChart'), {
+  type: 'bar',
+  data: {
+    labels: REGIONS,
+    datasets: MODELS.map(m => ({
+      label: m.name,
+      data: REGIONS.map(r => +(m.region[r].gender*100).toFixed(1)),
+      backgroundColor: m.ca, borderColor: m.cb, borderWidth:1.5, borderRadius:4
+    }))
+  },
+  options: {
+    responsive:true,
+    plugins: {
+      legend:{ position:'top', labels:{ color:'#94a3b8', font:{...font,size:11}, usePointStyle:true } },
+      tooltip:{ ...tip, callbacks:{ label:c=>`${c.dataset.label}: ${c.raw}%` } }
+    },
+    scales: {
+      y:{ min:75, max:100, ticks:{ color:'#475569', callback:v=>`${v}%` }, grid:{ color:'#1a2a45' } },
+      x:{ ticks:{ color:'#94a3b8' }, grid:{ display:false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('regionTrustChart'), {
+  type: 'bar',
+  data: {
+    labels: REGIONS,
+    datasets: MODELS.map(m => ({
+      label: m.name,
+      data: REGIONS.map(r => +m.region[r].trust.toFixed(2)),
+      backgroundColor: m.ca, borderColor: m.cb, borderWidth:1.5, borderRadius:4
+    }))
+  },
+  options: {
+    responsive:true,
+    plugins: {
+      legend:{ position:'top', labels:{ color:'#94a3b8', font:{...font,size:11}, usePointStyle:true } },
+      tooltip:{ ...tip, callbacks:{ label:c=>`${c.dataset.label}: ${(+c.raw).toFixed(2)}/10` } }
+    },
+    scales: {
+      y:{ min:5.5, max:8.5, ticks:{ color:'#475569' }, grid:{ color:'#1a2a45' } },
+      x:{ ticks:{ color:'#94a3b8' }, grid:{ display:false } }
+    }
+  }
+});
+</script>
+</body>
+</html>
