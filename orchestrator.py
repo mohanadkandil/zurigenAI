@@ -198,24 +198,21 @@ class BiasEvaluationOrchestrator:
     async def run(
         self,
         attributes: List[str] = None,
-        group_by: str = "skin_group",
         max_samples: Optional[int] = None,
         checkpoint_interval: int = 100,
         resume_from: Optional[str] = None,
     ) -> dict:
         """
-        Run the full evaluation pipeline.
+        Run VLM evaluation on all images and save raw results.
+
+        Analysis/grouping is done in post-processing.
 
         1. Load ALL samples
         2. Vision agent queries VLM for each image
         3. Judge agent evaluates each response
-        4. Analyzer calculates bias metrics for ONE grouping
-        5. Reporter generates output
-
-        Run separately for each grouping (skin_group, region, age, pronoun).
+        4. Save raw results with all metadata
 
         Args:
-            group_by: Single attribute to analyze by
             max_samples: Limit number of samples (None = all)
             checkpoint_interval: Save checkpoint every N images
             resume_from: Path to checkpoint file to resume from
@@ -244,13 +241,13 @@ class BiasEvaluationOrchestrator:
 
         remaining_samples = [s for s in samples if s.image_id not in processed_ids]
 
-        console.print(f"\n[bold blue]FHIBE VLM Bias Evaluation[/bold blue]")
+        console.print(f"\n[bold blue]FHIBE VLM Bias Evaluation - Data Collection[/bold blue]")
         console.print("=" * 60)
         console.print(f"Vision:     {self.vision_provider}:{self.vision_model}")
         console.print(f"Judge:      {self.judge.provider}:{self.judge.model}")
         console.print(f"Total:      {len(samples)} | Remaining: {len(remaining_samples)}")
         console.print(f"Attributes: {attributes}")
-        console.print(f"Group by:   {group_by}")
+        console.print(f"[dim]Analysis will be done in post-processing[/dim]")
         console.print("=" * 60)
 
         # Checkpoint file path
@@ -335,142 +332,61 @@ class BiasEvaluationOrchestrator:
                         }
                     })
 
-        # Step 4: Analyze for bias (single grouping - controlled experiment)
-        console.print("\n[yellow]Analyzing results...[/yellow]")
-        all_metrics = []
+        # Step 4: Save raw results (analysis done in post-processing)
+        console.print("\n[green]✓ Data collection complete![/green]")
+        console.print(f"  Total samples: {len(results)}")
+        console.print(f"  Successful parses: {sum(1 for r, _ in results if r.response)}")
+        console.print(f"  Parse failures: {sum(1 for r, _ in results if not r.response)}")
 
-        console.print(f"\n[cyan]═══ BALANCED EXPERIMENT: {group_by.upper()} ═══[/cyan]")
+        # Count by groups for summary
+        group_counts = {"skin_group": {}, "region": {}, "age": {}, "pronoun": {}}
+        for r, _ in results:
+            s = r.sample
+            group_counts["skin_group"][s.skin_group] = group_counts["skin_group"].get(s.skin_group, 0) + 1
+            group_counts["region"][s.region] = group_counts["region"].get(s.region, 0) + 1
+            group_counts["pronoun"][s.pronoun] = group_counts["pronoun"].get(s.pronoun, 0) + 1
+            # Age groups
+            if s.age < 25:
+                age_grp = "young (<25)"
+            elif s.age < 45:
+                age_grp = "adult (25-44)"
+            elif s.age < 65:
+                age_grp = "middle (45-64)"
+            else:
+                age_grp = "senior (65+)"
+            group_counts["age"][age_grp] = group_counts["age"].get(age_grp, 0) + 1
 
-        # KEY BIAS ANALYSIS: Trustworthiness and Profession
-        bias_analysis = self.analyzer.analyze_bias(results, group_by)
-
-        # Display trustworthiness bias (KEY METRIC)
-        trust = bias_analysis["trustworthiness"]
-        console.print(f"\n[bold]TRUSTWORTHINESS SCORES (1-10):[/bold]")
-
-        # Sort by mean score to show disparity clearly
-        sorted_groups = sorted(trust["group_stats"].items(), key=lambda x: x[1]["mean"], reverse=True)
-        for group_name, stats in sorted_groups:
-            bar = "█" * int(stats["mean"]) + "░" * (10 - int(stats["mean"]))
-            console.print(f"  {group_name:15} [{bar}] mean={stats['mean']:.2f} ± {stats['std']:.2f} (n={stats['n']})")
-
-        status = "[red]BIAS DETECTED[/red]" if trust["is_significant"] else "[green]No significant bias[/green]"
-        console.print(f"\n  Disparity: {trust['max_disparity']:.2f} points | Cohen's d: {trust['cohens_d']:.2f} | p={trust['p_value']:.4f}")
-        console.print(f"  {status}: {trust['interpretation']}")
-
-        # Display profession bias
-        prof = bias_analysis["professions"]
-        console.print(f"\n[bold]PROFESSION ASSIGNMENTS:[/bold]")
-        for group_name, stats in prof["group_stats"].items():
-            console.print(f"  {group_name:15} High prestige: {stats['high_prestige_pct']:.1%} | Low prestige: {stats['low_prestige_pct']:.1%}")
-            if stats["examples"]:
-                console.print(f"                  Examples: {', '.join(stats['examples'][:3])}")
-
-        console.print(f"\n  High prestige disparity: {prof['high_prestige_disparity']:.1%}")
-        console.print(f"  Low prestige disparity: {prof['low_prestige_disparity']:.1%}")
-
-        # Accuracy analysis
-        console.print(f"\n[bold]ACCURACY BY ATTRIBUTE:[/bold]")
-        for attr in attributes:
-            metrics = self.analyzer.analyze(results, attr, group_by)
-            all_metrics.append(metrics)
-
-            status = "[red]BIAS[/red]" if metrics.is_significant else "[green]OK[/green]"
-            console.print(f"  {attr:25} | Disparity: {metrics.max_disparity:6.1%} | p={metrics.p_value:.3f} | {status}")
-
-        # Step 5: Generate report
-        console.print("\n" + self.reporter.text_report(all_metrics))
-        console.print("\n" + self.reporter.bias_report([bias_analysis]))
-
-        # Summary
-        summary = {
-            "group_by": group_by,
-            "samples_per_group": bias_analysis["groups"],
-            "total_samples": len(results),
-            "accuracy_metrics": {
-                "total": len(all_metrics),
-                "significant": sum(1 for m in all_metrics if m.is_significant),
-                "avg_disparity": sum(m.max_disparity for m in all_metrics) / len(all_metrics) if all_metrics else 0,
-                "biased_attrs": [m.attribute for m in all_metrics if m.is_significant],
-            },
-            "trustworthiness_bias": trust["is_significant"],
-            "trustworthiness_cohens_d": trust["cohens_d"],
-            "trustworthiness_p_value": trust["p_value"],
-        }
-
-        console.print(f"\n[bold]═══════════════════════════════════════════════════════════[/bold]")
-        console.print(f"[bold]FINAL SUMMARY - Grouped by: {group_by.upper()}[/bold]")
-        console.print(f"[bold]═══════════════════════════════════════════════════════════[/bold]")
-
-        console.print(f"\n[cyan]Samples per group:[/cyan]")
-        for g, n in bias_analysis["groups"].items():
-            console.print(f"  {g}: {n}")
-
-        console.print(f"\n[cyan]Accuracy-based analysis:[/cyan]")
-        console.print(f"  Significant biases: {summary['accuracy_metrics']['significant']}/{summary['accuracy_metrics']['total']}")
-        console.print(f"  Average disparity:  {summary['accuracy_metrics']['avg_disparity']:.1%}")
-        if summary['accuracy_metrics']['biased_attrs']:
-            console.print(f"  [red]Biased attributes: {summary['accuracy_metrics']['biased_attrs']}[/red]")
-
-        console.print(f"\n[cyan]Subjective bias (KEY METRIC):[/cyan]")
-        if trust["is_significant"]:
-            console.print(f"  [red]⚠️  TRUSTWORTHINESS BIAS DETECTED[/red]")
-            console.print(f"  [red]    Cohen's d = {trust['cohens_d']:.2f}, p = {trust['p_value']:.4f}[/red]")
-            console.print(f"  [red]    {trust['interpretation']}[/red]")
-        else:
-            console.print(f"  [green]✓  No significant trustworthiness bias[/green]")
+        console.print(f"\n[cyan]Samples by group:[/cyan]")
+        for grp_name, counts in group_counts.items():
+            console.print(f"  {grp_name}: {dict(counts)}")
 
         return {
             "config": {
                 "vision": f"{self.vision_provider}:{self.vision_model}",
                 "judge": f"{self.judge.provider}:{self.judge.model}",
                 "total_samples": len(results),
-                "samples_per_group": bias_analysis["groups"],
-                "attributes": attributes,
-                "group_by": group_by,
             },
-            "metrics": self.reporter.json_report(all_metrics),
-            "bias_analysis": {
-                "group_by": bias_analysis["group_by"],
-                "n_samples": bias_analysis["n_samples"],
-                "groups": bias_analysis["groups"],
-                "trustworthiness": bias_analysis["trustworthiness"],
-                "professions": bias_analysis["professions"],
-            },
-            "summary": summary,
+            "group_counts": group_counts,
             "raw_results": [
                 {
                     "image_id": r.sample.image_id,
+                    "subject_id": r.sample.subject_id,
+                    "filepath": r.sample.filepath,
                     "skin_group": r.sample.skin_group,
                     "region": r.sample.region,
                     "age": r.sample.age,
                     "pronoun": r.sample.pronoun,
-                    "response": r.response.model_dump() if r.response else None,
+                    "ground_truth": r.sample.ground_truth,
+                    "vlm_response": r.response.model_dump() if r.response else None,
+                    "raw_response": r.raw_response,
+                    "parse_error": r.parse_error,
                     "latency_ms": r.latency_ms,
+                    "tokens_used": r.tokens_used,
+                    "judgements": [j.model_dump() for j in judge_resp.judgements],
                 }
-                for r, _ in results
+                for r, judge_resp in results
             ]
         }
-
-    def _get_group_value(self, sample, group_by: str) -> str:
-        """Helper to get group value for a sample."""
-        if group_by == "skin_group":
-            return sample.skin_group
-        elif group_by == "region":
-            return sample.region
-        elif group_by == "age":
-            age = sample.age
-            if age < 25:
-                return "young (<25)"
-            elif age < 45:
-                return "adult (25-44)"
-            elif age < 65:
-                return "middle (45-64)"
-            else:
-                return "senior (65+)"
-        elif group_by == "pronoun":
-            return sample.pronoun
-        return "unknown"
 
 
 # ============================================================================
@@ -520,9 +436,6 @@ Run separately for each grouping to get controlled experiments!
                        choices=["ollama", "anthropic", "openai", "google", "featherless"])
     parser.add_argument("--judge-model", type=str, default="llama3.2")
 
-    parser.add_argument("--group-by", type=str, default="skin_group",
-                       choices=["skin_group", "region", "age", "pronoun"],
-                       help="Attribute to group by (run separately for each)")
     parser.add_argument("--concurrency", type=int, default=4, help="Max concurrent requests (Featherless allows 4)")
     parser.add_argument("--rate-limit", type=float, default=0.5, help="Delay between requests (seconds)")
     parser.add_argument("--checkpoint-interval", type=int, default=100, help="Save checkpoint every N images")
@@ -572,7 +485,6 @@ Run separately for each grouping to get controlled experiments!
 
     # Show cost estimate
     console.print(f"\n[bold]Configuration[/bold]")
-    console.print(f"  Group by: {args.group_by}")
     console.print(f"  Samples: {n_samples:,} (of {total_in_file:,} available)")
     total_cost = display_cost_table(
         n_samples, args.vision_provider, args.vision_model,
@@ -601,7 +513,6 @@ Run separately for each grouping to get controlled experiments!
     )
 
     results = asyncio.run(orchestrator.run(
-        group_by=args.group_by,
         max_samples=max_samples,
         checkpoint_interval=args.checkpoint_interval,
         resume_from=args.resume,

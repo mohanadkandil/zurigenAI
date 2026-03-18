@@ -1,110 +1,114 @@
-# FHIBE Bias Evaluation System
+# pixelPrejudice
 
-A comprehensive, agent-based evaluation system for Vision-Language Models (VLMs) using the **FHIBE (Fairness in Human-Image Bias Evaluation)** dataset.
+**What does AI assume when it sees your face?**
 
-## Features
+We ran 10,000 diverse human photos through multiple Vision Language Models and asked them to rate trustworthiness, intelligence, and attractiveness. The results reveal systematic biases across skin tones, regions, and genders.
 
-- **Hub-and-Spoke Agent Architecture**: Coordinates Vision, Judge, Sampler, Analyzer, and Reporter agents.
-- **VLM Support**: Interfaces with Ollama (local), Anthropic, OpenAI, Google Gemini, and Featherless AI.
-- **Structured Evaluation**: Uses Pydantic schemas for consistent data extraction and LLM-as-a-Judge evaluation.
-- **Bias Analysis**: Focuses on both objective accuracy disparities and subjective bias indicators (Trustworthiness and Profession assignments).
-- **Engineering-First Design**: Includes checkpointing, resume capabilities, cost estimation, and rate limiting.
-
-## Setup
-
-### 1. Environment
-
-This project uses `uv` for dependency management. To set up the environment:
+## Quick Start
 
 ```bash
-uv pip install -r requirements.txt
+# Install dependencies
+pip install pandas pydantic rich httpx pillow
+
+# Start vLLM server (requires GPU)
+vllm serve Qwen/Qwen2.5-VL-7B-Instruct --port 8001 --gpu-memory-utilization 0.9
+
+# Run evaluation
+python run_vlm.py --model Qwen/Qwen2.5-VL-7B-Instruct --vllm-url http://localhost:8001
+
+# Quick test (20 samples)
+python run_vlm.py --quick
+
+# Analyze results
+python analyze_results.py results/vlm_*.json --group-by all
 ```
 
-Or using pip:
+## What We Measure
 
-```bash
-pip install -r requirements.txt
+### Verifiable (Ground Truth Available)
+
+| Field       | Description                        |
+| ----------- | ---------------------------------- |
+| age         | Estimated age in years             |
+| nationality | Guessed nationality                |
+| skin_tone   | Light, medium, or dark             |
+| hair_type   | Straight, curly, wavy, coily, bald |
+| scene       | Indoor or outdoor                  |
+| activity    | What the person is doing           |
+
+### Bias Indicators (No Ground Truth)
+
+| Field                 | Description                  |
+| --------------------- | ---------------------------- |
+| trustworthiness_score | 1-10 scale                   |
+| intelligence_score    | 1-10 scale                   |
+| attractiveness_score  | 1-10 scale                   |
+| profession_guess      | What job AI thinks they have |
+| socioeconomic_class   | Lower, middle, or upper      |
+
+## Models Tested
+
+| Model                     | Lab       | Parameters            |
+| ------------------------- | --------- | --------------------- |
+| Qwen2.5-VL-7B-Instruct    | Alibaba   | 7B                    |
+| Phi-3.5-vision-instruct   | Microsoft | 4.2B                  |
+| Qwen3-VL-30B-A3B-Instruct | Alibaba   | 30B MoE (2.4B active) |
+
+## Dataset
+
+We use the [FHIBE dataset](https://huggingface.co/datasets/sony/fhibe) containing ~10,000 diverse human images with demographic metadata:
+
+- Skin tone (Fitzpatrick scale)
+- Ancestry/Region
+- Age
+- Gender/Pronouns
+- Nationality
+
+## Project Structure
+
+```
+pixelPrejudice/
+├── run_vlm.py          # Main evaluation script
+├── analyze_results.py  # Bias analysis script
+├── results/            # JSON output files
+│   └── vlm_*.json
+├── DEVPOST.md          # Hackathon submission
+└── README.md
 ```
 
-Create a `.env` file with your API keys:
+## Requirements
 
-```env
-ANTHROPIC_API_KEY=your_key
-OPENAI_API_KEY=your_key
-GOOGLE_API_KEY=your_key
-FEATHERLESS_API_KEY=your_key
-```
-
-### 2. Dataset Setup
-
-The FHIBE dataset is required for evaluation (~192GB). You can download and extract it using the provided script:
-
-```bash
-chmod +x setup_dataset.sh
-./setup_dataset.sh
-```
-
-The script uses the following command to download the dataset:
-
-```bash
-curl -L -X GET 'https://fairnessbenchmark.ai.sony/api/fhibe/get-dataset-download-redirect?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidWNrZXQiOiJzYWktZXRoaWNzLWVoY2lkLWZoaWJlLXRpYyIsImtleSI6ImZoaWJlLjIwMjUwNzE2LnUuZ1Q1X3JGVEFfZG93bnNhbXBsZWRfcHVibGljLnRhci5neiIsInVzZXIiOiJ0aGVhcmthbWl0cmFAZ21haWwuY29tIiwic2x1ZyI6Ii9kb3dubG9hZCIsImlhdCI6MTc3MzQ4MTYyNiwiZXhwIjoxNzczNTY4MDI2fQ.2LUmB-t6PdDzrC2DO8_GR6gBMPhdqAcNM9-jzV-KMSE' -o 'fhibe.20250716.u.gT5_rFTA_downsampled_public.tar.gz'
-```
-
-And extracts it with:
-
-```bash
-tar -xzf fhibe.20250716.u.gT5_rFTA_downsampled_public.tar.gz
-```
-
-### 3. Configuration
-
-You can configure the dataset path using environment variables if you prefer to store it elsewhere:
-
-- `FHIBE_DATASET_ROOT`: Root directory of the extracted dataset.
-- `FHIBE_DATASET_CSV`: Path to the main CSV metadata file.
-
-## Usage
-
-The `orchestrator.py` is the main entry point for running evaluations.
-
-### Quick Test
-
-Run a quick test with a local Ollama model:
-
-```bash
-python orchestrator.py --quick --vision-provider ollama --vision-model llama3.2-vision
-```
-
-### Full Evaluation
-
-Run a full evaluation on a specific grouping (e.g., skin color):
-
-```bash
-python orchestrator.py --full --group-by skin_group --vision-provider openai --vision-model gpt-4o
-```
-
-### Other Groupings
-
-You can analyze bias by different demographic attributes:
-
-```bash
-python orchestrator.py --group-by region
-python orchestrator.py --group-by age
-python orchestrator.py --group-by pronoun
-```
-
-### Resume from Checkpoint
-
-If an evaluation is interrupted, you can resume from the last checkpoint:
-
-```bash
-python orchestrator.py --resume results/checkpoint_YYYYMMDD_HHMMSS.json
-```
+- Python 3.10+
+- GPU with 24GB+ VRAM (or use cloud GPU)
+- vLLM 0.12+
 
 ## Architecture
 
-- **VisionAgent**: Queries VLMs and parses structured responses.
-- **JudgeAgent**: Compares VLM predictions against ground truth using an LLM-as-a-Judge approach.
-- **SamplerAgent**: Handles balanced and stratified sampling from the dataset.
-- **AnalyzerAgent**: Performs statistical tests (ANOVA, T-tests) to detect bias.
-- **ReporterAgent**: Generates human-readable and machine-readable reports.
+We use a hub-and-spoke agent architecture with a central orchestrator coordinating specialized agents:
+
+![Pipeline Architecture](https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/004/469/001/datas/small.png)
+
+- **Vision Agent** queries VLMs and extracts structured responses from images
+- **Judge Agent** compares predictions against ground truth using LLM-as-a-Judge
+- **Sampler Tool** handles balanced sampling across demographic groups
+- **Analyzer Tool** runs statistical tests including T-tests, correlations, and p-values
+- **Reporter Agent** generates bias reports with metrics and visualizations
+
+## Key Findings
+
+_Analysis in progress..._
+
+## Built With
+
+- [vLLM](https://github.com/vllm-project/vllm) - Fast LLM inference
+- [FHIBE](https://huggingface.co/datasets/sony/fhibe) - Fair Human Image Bias Evaluation dataset
+- [Pydantic](https://docs.pydantic.dev/) - Structured output validation
+- [Vast.ai](https://vast.ai/) - GPU cloud (H100 80GB)
+
+## License
+
+MIT
+
+## Acknowledgments
+
+Built for the Zurich GenAI Hackathon 2026 - SonyAI track.
