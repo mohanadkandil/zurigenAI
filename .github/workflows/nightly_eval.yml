@@ -1,0 +1,62 @@
+name: Nightly Bias Evaluation
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run at midnight UTC
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Check for Sony.ai Updates
+        run: python check_sony_updates.py
+
+      - name: Process Evaluation Queue
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          # Fetch todo list
+          if [ -f "todo.json" ]; then
+            models=$(jq -r '.[]' todo.json)
+            for model in $models; do
+              echo "Evaluating model: $model"
+              # Run evaluation to a temporary file
+              temp_results="results/temp_${model//\//_}.json"
+              python orchestrator.py --samples 100 --vision-provider featherless --vision-model "$model" --output "$temp_results"
+              
+              # Perform incremental merge
+              final_results="results/vlm_${model//\//_}.json"
+              python incremental_results.py --old "$final_results" --new "$temp_results" --out "$final_results"
+              
+              # Cleanup temp
+              rm "$temp_results"
+              
+              # Regenerate reports
+              python bias_reporter.py "$final_results"
+            done
+            # Clear todo list after processing
+            echo "[]" > todo.json
+          fi
+          
+      - name: Commit and Push Results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add results/ json_reports/ todo.json
+          git commit -m "Nightly bias evaluation results [skip ci]" || echo "No changes to commit"
+          git push
