@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rclone mkdir:*)",
+      "WebSearch",
+      "Bash(source .venv/bin/activate)",
+      "Bash(python3:*)",
+      "WebFetch(domain:featherless.ai)",
+      "Bash(python -m py_compile:*)",
+      "Bash(find /Users/mohannedkandil/web/zuri/genai/sonyimpl/frontend -not -path */node_modules/* -not -path */.next/* -type d)",
+      "Bash(brew install:*)",
+      "WebFetch(domain:docs.pencil.dev)",
+      "Bash(mdfind \"kMDItemFSName == ''''Pencil.app''''\")",
+      "Read(//Applications/**)",
+      "Read(//Users/mohannedkandil/Applications/**)",
+      "Bash(mdfind pencil-mcp:*)",
+      "Bash(npm install:*)",
+      "Bash(wc -l /Users/mohannedkandil/web/zuri/genai/sonyimpl/*.json_reports/*.json)",
+      "Bash(wc:*)",
+      "Bash(npx next:*)",
+      "Bash(git add:*)",
+      "Bash(npx vercel:*)",
+      "Bash(git push:*)",
+      "Bash(vercel:*)",
+      "WebFetch(domain:gsap.com)",
+      "Bash(git commit -m \"feat: GSAP ScrollTrigger animations, loading screens, improved landing page:*)"
+    ]
+  }
+}

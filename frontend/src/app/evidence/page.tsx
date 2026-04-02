@@ -61,6 +61,7 @@ export default function Evidence() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMinimized, setChatMinimized] = useState(false);
+  const [globeReady, setGlobeReady] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [countries, setCountries] = useState<any[]>([]);
@@ -78,6 +79,12 @@ export default function Evidence() {
         setCountries(lands.features);
       })
       .catch(console.error);
+  }, []);
+
+  // Fallback: dismiss loader after 4s no matter what
+  useEffect(() => {
+    const fallback = setTimeout(() => setGlobeReady(true), 4000);
+    return () => clearTimeout(fallback);
   }, []);
 
   useEffect(() => {
@@ -112,6 +119,7 @@ export default function Evidence() {
     globeMaterial.color.set('#0E0E0E');
     globeMaterial.opacity = 0.85;
     globeMaterial.transparent = true;
+    setTimeout(() => setGlobeReady(true), 600);
   }, []);
 
   useEffect(() => {
@@ -189,6 +197,30 @@ export default function Evidence() {
 
   return (
     <div className="evidence-globe-wrap" ref={containerRef}>
+      {/* Loading screen */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 9999,
+        background: '#0A0A0A',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', gap: '1.5rem',
+        opacity: globeReady ? 0 : 1,
+        pointerEvents: globeReady ? 'none' : 'auto',
+        transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+      }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: '50%',
+          border: '2px solid #1A1A1A', borderTopColor: '#E63946',
+          animation: 'spin 1s linear infinite',
+        }} />
+        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1rem', fontWeight: 700, color: '#F0ECE4' }}>
+          Loading Evidence
+        </div>
+        <div style={{ fontFamily: 'Inter', fontSize: '0.55rem', color: '#5A5548', letterSpacing: 2, textTransform: 'uppercase' }}>
+          Mapping global bias data
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+
       {dimensions.width > 0 && (
         <Globe
           ref={globeRef}
