@@ -551,56 +551,6 @@ export default function Home() {
                 Prejudice
               </span>
             </h1>
-            <div
-              className="hero-bottom"
-              style={{
-                marginTop: "3rem",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "2rem",
-              }}
-            >
-              <Link
-                href="/verdict"
-                style={{
-                  display: "inline-block",
-                  background: "#E63946",
-                  color: "#F0ECE4",
-                  padding: "0.85rem 2.5rem",
-                  borderRadius: "8px",
-                  fontFamily: "Inter",
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  letterSpacing: "0.04em",
-                  animation: "breathe 3s ease infinite",
-                }}
-              >
-                Enter the Investigation
-              </Link>
-              <svg width="20" height="32" viewBox="0 0 20 32" fill="none">
-                <rect
-                  x="6"
-                  y="0"
-                  width="8"
-                  height="16"
-                  rx="4"
-                  stroke="rgba(90,85,72,0.4)"
-                  strokeWidth="1.5"
-                />
-                <circle cx="10" cy="7" r="2" fill="#E63946">
-                  <animate
-                    attributeName="cy"
-                    values="6;11;6"
-                    dur="2s"
-                    repeatCount="indefinite"
-                    calcMode="spline"
-                    keySplines="0.4 0 0.2 1;0.4 0 0.2 1"
-                  />
-                </circle>
-              </svg>
-            </div>
           </section>
 
           {/* ── 2. THE PROBLEM — pinned, word-by-word reveal ── */}
