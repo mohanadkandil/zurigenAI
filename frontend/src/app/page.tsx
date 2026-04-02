@@ -10,7 +10,14 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
+const Globe = dynamic(() => import('react-globe.gl'), {
+  ssr: false,
+  loading: () => (
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 48, height: 48, borderRadius: '50%', border: '2px solid #1A1A1A', borderTopColor: '#E63946', animation: 'spin 1s linear infinite' }} />
+    </div>
+  ),
+});
 
 const POINTS = [
   { lat: 9.1, lng: 18.7, size: 0.6, hot: true },

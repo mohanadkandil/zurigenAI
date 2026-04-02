@@ -2,8 +2,17 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import ReactMarkdown from 'react-markdown';
 
-const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
+const Globe = dynamic(() => import('react-globe.gl'), {
+  ssr: false,
+  loading: () => (
+    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid #1A1A1A', borderTopColor: '#E63946', animation: 'spin 1s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  ),
+});
 
 const REGIONAL_DATA: Record<string, Record<string, { count: number; trust: number; ses: number; genderAcc: number }>> = {
   "Qwen3-30B": {
@@ -406,7 +415,7 @@ export default function Evidence() {
                   }}>
                     {msg.role === 'user' ? 'YOU' : 'AI ANALYSIS'}
                   </div>
-                  <div style={{
+                  <div className={msg.role === 'ai' ? 'chat-md' : ''} style={{
                     background: msg.role === 'user' ? '#1A1A1A' : 'rgba(230,57,70,0.06)',
                     border: `1px solid ${msg.role === 'user' ? '#222' : 'rgba(230,57,70,0.12)'}`,
                     borderRadius: msg.role === 'user' ? '10px 10px 3px 10px' : '10px 10px 10px 3px',
@@ -414,7 +423,7 @@ export default function Evidence() {
                     fontSize: '0.78rem', lineHeight: 1.55,
                     color: msg.role === 'user' ? '#F0ECE4' : '#9A9080',
                   }}>
-                    {msg.text}
+                    {msg.role === 'ai' ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
                   </div>
                 </div>
               ))}
