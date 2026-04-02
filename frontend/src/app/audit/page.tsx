@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Radar } from 'react-chartjs-2';
 import { jsPDF } from 'jspdf';
 import {
@@ -35,7 +35,7 @@ export default function Audit() {
   };
 
   const [streaming, setStreaming] = useState(false);
-  const videoRef = (window as any).videoRef; // Using global ref if needed, or better use useRef
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Use state-based refs for React
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
