@@ -16,7 +16,7 @@ export default function NavFooter({ children }: { children: React.ReactNode }) {
           <div className="nav-title">pixelPrejudice</div>
         </Link>
         <div className="nav-links">
-          <Link href="/" className="nav-link">Verdict</Link>
+          <Link href="/verdict" className="nav-link">Verdict</Link>
           <Link href="/evidence" className="nav-link">Evidence</Link>
           <Link href="/hunt" className="nav-link">Hunt</Link>
           <Link href="/audit" className="nav-link">Audit</Link>
